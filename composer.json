@@ -1,0 +1,30 @@
+{
+    "name": "romanpravda/php-scorm-packager",
+    "description": "Create SCORM Package",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Roman Pravda",
+            "email": "roman.olegovich.pravda@yandex.ru"
+        }
+    ],
+    "require": {
+        "php": ">=7.0.0",
+        "ext-simplexml": "*",
+        "ext-dom": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "Romanpravda\\Scormpackager\\": "src"
+        },
+        "files": [
+            "src/helpers.php"
+        ]
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "prefer-stable": true,
+    "minimum-stability": "dev"
+}
