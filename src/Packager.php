@@ -14,13 +14,18 @@ use Romanpravda\Scormpackager\Exceptions\VersionIsNotSupportedException;
 use Romanpravda\Scormpackager\Exceptions\VersionNotSetException;
 use Romanpravda\Scormpackager\Helpers\ScormVersions;
 use Romanpravda\Scormpackager\Helpers\XMLFromArrayCreator;
+use Romanpravda\Scormpackager\Helpers\ZipArchiveHelper;
 use Romanpravda\Scormpackager\Schemas\AbstractScormSchema;
 use Romanpravda\Scormpackager\Schemas\Scorm12Schema;
 use Romanpravda\Scormpackager\Schemas\Scorm2004Schema;
 use Throwable;
+use ZipArchive;
 
 class Packager
 {
+    const XML_MANIFEST_FILE_NAME = "imsmanifest.xml";
+    const DIRECTORY_FOR_DEFINITION_FILES = "definitionFiles";
+
     /**
      * Version of SCORM package
      *
@@ -277,14 +282,21 @@ class Packager
     /**
      * Build SCORM package
      *
+     * @return string
+     *
      * @throws Throwable
      */
-    public function buildPackage()
+    public function buildPackage(): string
     {
         $this->createDestinationDirectory();
-        $this->copyFilesForPackage();
         $this->createManifestFile();
         $this->copyDefinitionFiles();
+
+        $pathToZipArchive = ZipArchiveHelper::createFromDirectory($this->getSource(), $this->getDestination(), $this->getIdentifier());
+
+        $this->deleteManifestAndDefinitionFiles();
+
+        return $pathToZipArchive;
     }
 
     /**
@@ -296,16 +308,6 @@ class Packager
     }
 
     /**
-     * Copy files for package into destination directory
-     */
-    private function copyFilesForPackage()
-    {
-        $filesForPackage = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($this->getSource(), RecursiveDirectoryIterator::SKIP_DOTS), RecursiveIteratorIterator::CHILD_FIRST);
-
-        copy_files($filesForPackage, $this->getSource(), $this->getDestination());
-    }
-
-    /**
      * Copy SCORM manifest definition files into destination directory
      */
     private function copyDefinitionFiles()
@@ -313,7 +315,7 @@ class Packager
         $pathToDefinitionFiles = realpath(__DIR__.DIRECTORY_SEPARATOR."..".DIRECTORY_SEPARATOR."dist".DIRECTORY_SEPARATOR."definitionFiles".DIRECTORY_SEPARATOR.$this->getVersion());
         $definitionFiles = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($pathToDefinitionFiles, RecursiveDirectoryIterator::SKIP_DOTS), RecursiveIteratorIterator::CHILD_FIRST);
 
-        copy_files($definitionFiles, $pathToDefinitionFiles, $this->getDestination().DIRECTORY_SEPARATOR."definitionFiles");
+        copy_files($definitionFiles, $pathToDefinitionFiles, $this->getSource().DIRECTORY_SEPARATOR.self::DIRECTORY_FOR_DEFINITION_FILES);
     }
 
     /**
@@ -332,7 +334,7 @@ class Packager
         $doc = dom_import_simplexml($xml)->ownerDocument;
         $doc->encoding = 'UTF-8';
 
-        $xml->asXML($this->getDestination().DIRECTORY_SEPARATOR."imsmanifest.xml");
+        $xml->asXML($this->getSource().DIRECTORY_SEPARATOR.self::XML_MANIFEST_FILE_NAME);
     }
 
     /**
@@ -371,5 +373,14 @@ class Packager
             $this->getStartingPage(),
             $this->getDestination()
         );
+    }
+
+    /**
+     * Deletes SCORM manifest file and definition files after creating zip archive with package
+     */
+    private function deleteManifestAndDefinitionFiles()
+    {
+        unlink($this->getSource().DIRECTORY_SEPARATOR.self::XML_MANIFEST_FILE_NAME);
+        delete_directory_if_exists($this->getSource().DIRECTORY_SEPARATOR.self::DIRECTORY_FOR_DEFINITION_FILES);
     }
 }

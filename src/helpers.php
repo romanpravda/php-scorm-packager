@@ -63,3 +63,41 @@ if (!function_exists('copy_files')) {
         }
     }
 }
+
+if (!function_exists('get_random_string')) {
+    /**
+     * Generate a random string
+     *
+     * @param int $length
+     *
+     * @return string
+     */
+    function get_random_string(int $length = 16): string
+    {
+        return substr(str_shuffle(str_repeat($x='0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ', ceil($length/strlen($x)) )), 1, $length);
+    }
+}
+
+if (!function_exists('delete_directory_if_exists')) {
+    /**
+     * Delete directory if it exists. Even if it isn't empty.
+     *
+     * @param string $pathToDirectory
+     */
+    function delete_directory_if_exists(string $pathToDirectory)
+    {
+        if (is_dir($pathToDirectory)) {
+            $files = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($pathToDirectory, RecursiveDirectoryIterator::SKIP_DOTS), RecursiveIteratorIterator::CHILD_FIRST);
+
+            foreach ($files as $file) {
+                if ($file->isDir()){
+                    rmdir($file->getRealPath());
+                } else {
+                    unlink($file->getRealPath());
+                }
+            }
+
+            rmdir($pathToDirectory);
+        }
+    }
+}
