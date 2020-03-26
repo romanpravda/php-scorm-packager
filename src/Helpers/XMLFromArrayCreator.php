@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Romanpravda\Scormpackager\Helpers;
 
 use Romanpravda\Scormpackager\Exceptions\ScormManifestSchemaIsNotValidException;
-use SimpleXMLElement;
 use Throwable;
 
 class XMLFromArrayCreator
@@ -13,66 +12,64 @@ class XMLFromArrayCreator
     /**
      * Creates XML with SCORM manifest from schema in array
      *
-     * @param array $schema
+     * @param array $elements
      *
-     * @return SimpleXMLElement
+     * @return string
      *
      * @throws Throwable
      */
-    public static function createManifestXMLFromSchema(array $schema): SimpleXMLElement
+    public static function createManifestXMLFromSchema(array $elements): string
     {
-        throw_if(!isset($schema['name']), ScormManifestSchemaIsNotValidException::class);
+        /** @var resource $xmlwriter */
+        $xmlwriter = xmlwriter_open_memory();
 
-        $elementName = $schema['name'];
-        $elementAttributes = $schema['attributes'] ?? [];
-        $elementChilds = $schema['childs'] ?? [];
-        $elementValue = $schema['value'] ?? '';
+        xmlwriter_set_indent($xmlwriter, true);
+        xmlwriter_set_indent_string($xmlwriter, '   ');
 
+        xmlwriter_start_document($xmlwriter, '1.0', 'UTF-8');
 
-        if (empty($elementChilds)) {
-            $root = new SimpleXMLElement("<{$elementName}>{$elementValue}</{$elementName}>");
-        } else {
-            $root = new SimpleXMLElement("<{$elementName}></{$elementName}>");
-
-            self::addChildElementsToElement($root, $elementChilds);
+        foreach ($elements as $element) {
+            self::createElement($xmlwriter, $element);
         }
 
-        foreach ($elementAttributes as $elementAttributeName => $elementAttributeValue) {
-            $root->addAttribute($elementAttributeName, $elementAttributeValue);
-        }
+        xmlwriter_end_document($xmlwriter);
 
-        return $root;
+        return xmlwriter_output_memory($xmlwriter);
     }
 
     /**
-     * Added child elements to parent
+     * Create element and add it to xml
      *
-     * @param SimpleXMLElement $parent
-     * @param array $childs
+     * @param resource $xmlwriter
+     * @param array $element
      *
      * @throws Throwable
      */
-    private static function addChildElementsToElement(SimpleXMLElement $parent, array $childs)
+    private static function createElement($xmlwriter,  array $element)
     {
-        foreach ($childs as $child) {
-            throw_if(!isset($child['name']), ScormManifestSchemaIsNotValidException::class);
+        throw_if(!isset($element['name']), ScormManifestSchemaIsNotValidException::class);
 
-            $elementName = $child['name'];
-            $elementAttributes = $child['attributes'] ?? [];
-            $elementChilds = $child['childs'] ?? [];
-            $elementValue = $child['value'] ?? '';
+        $elementName = $element['name'];
+        $elementAttributes = $element['attributes'] ?? [];
+        $elementChilds = $element['childs'] ?? [];
+        $elementValue = (string) ($element['value'] ?? '');
 
-            if (empty($elementChilds)) {
-                $childElement = $parent->addChild($elementName, $elementValue);
-            } else {
-                $childElement = $parent->addChild($elementName);
+        xmlwriter_start_element($xmlwriter, $elementName);
 
-                self::addChildElementsToElement($childElement, $elementChilds);
-            }
+        foreach ($elementAttributes as $elementAttributeName => $elementAttributeValue) {
+            xmlwriter_start_attribute($xmlwriter, $elementAttributeName);
+            xmlwriter_text($xmlwriter, (string) $elementAttributeValue);
+            xmlwriter_end_attribute($xmlwriter);
+        }
 
-            foreach ($elementAttributes as $elementAttributeName => $elementAttributeValue) {
-                $childElement->addAttribute($elementAttributeName, $elementAttributeValue);
+        if (empty($elementChilds)) {
+            xmlwriter_text($xmlwriter, $elementValue);
+        } else {
+            foreach ($elementChilds as $elementChild) {
+                self::createElement($xmlwriter, $elementChild);
             }
         }
+
+        xmlwriter_end_element($xmlwriter);
     }
 }

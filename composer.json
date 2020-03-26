@@ -11,9 +11,9 @@
     ],
     "require": {
         "php": ">=7.0.0",
-        "ext-simplexml": "*",
         "ext-dom": "*",
-        "ext-zip": "*"
+        "ext-zip": "*",
+        "ext-xmlwriter": "*"
     },
     "autoload": {
         "psr-4": {
