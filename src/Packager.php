@@ -292,7 +292,7 @@ class Packager
         $this->createManifestFile();
         $this->copyDefinitionFiles();
 
-        $pathToZipArchive = ZipArchiveHelper::createFromDirectory($this->getSource(), $this->getDestination(), $this->getIdentifier());
+        $pathToZipArchive = ZipArchiveHelper::createFromDirectory($this->getSource(), $this->getDestination(), str_replace("/", "_", $this->getIdentifier()));
 
         $this->deleteManifestAndDefinitionFiles();
 
@@ -329,12 +329,9 @@ class Packager
     {
         $schema = $this->getScormManifestSchema();
 
-        $xml = XMLFromArrayCreator::createManifestXMLFromSchema($schema);
+        $xmlString = XMLFromArrayCreator::createManifestXMLFromSchema($schema);
 
-        $doc = dom_import_simplexml($xml)->ownerDocument;
-        $doc->encoding = 'UTF-8';
-
-        $xml->asXML($this->getSource().DIRECTORY_SEPARATOR.self::XML_MANIFEST_FILE_NAME);
+        file_put_contents($this->getSource().DIRECTORY_SEPARATOR.self::XML_MANIFEST_FILE_NAME, $xmlString);
     }
 
     /**
