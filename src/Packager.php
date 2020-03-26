@@ -304,7 +304,7 @@ class Packager
      */
     private function createDestinationDirectory()
     {
-        mkdir($this->getDestination());
+        ensure_directory($this->getDestination());
     }
 
     /**
