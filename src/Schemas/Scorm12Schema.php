@@ -21,7 +21,7 @@ class Scorm12Schema extends AbstractScormSchema
      */
     public static function getSchema(string $title, string $identifier, string $organization, string $version, int $masteryScore, string $startingPage, string $pathToDirectory): array
     {
-        $schemaIdentifier = self::getSchemaIdentifier($title);
+        $schemaIdentifier = self::getSchemaIdentifier($identifier);
         $itemIdentifier = self::getItemIdentifier($identifier);
         $identifierRef = self::getIdentifierRef($identifier);
         $schemaOrganization = self::getSchemaOrganization($organization);

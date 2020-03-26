@@ -71,16 +71,18 @@ abstract class AbstractScormSchema
 
         foreach ($files as $file) {
             /** @var SplFileInfo $file */
-            $filePath = $file->getRealPath();
+            if (!$file->isDir()) {
+                $filePath = $file->getRealPath();
 
-            $relativeFilePath = substr($filePath, strlen($pathToDirectory) + 1);
+                $relativeFilePath = substr($filePath, strlen($pathToDirectory) + 1);
 
-            $filesForSchema[] = [
-                "name" => "file",
-                "attributes" => [
-                    "href" => $relativeFilePath
-                ]
-            ];
+                $filesForSchema[] = [
+                    "name" => "file",
+                    "attributes" => [
+                        "href" => $relativeFilePath
+                    ]
+                ];
+            }
         }
 
         return $filesForSchema;

@@ -52,7 +52,7 @@ class XMLFromArrayCreator
         $elementName = $element['name'];
         $elementAttributes = $element['attributes'] ?? [];
         $elementChilds = $element['childs'] ?? [];
-        $elementValue = ((string) $element['value']) ?? null;
+        $elementValue = isset($element['value']) ? ((string) $element['value']) : null;
 
         xmlwriter_start_element($xmlwriter, $elementName);
 

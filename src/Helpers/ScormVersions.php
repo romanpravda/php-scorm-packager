@@ -28,7 +28,7 @@ class ScormVersions
                 return self::SCORM__1_2__VERSION;
                 break;
             case '2004.3':
-            case '2004 3th Edition':
+            case '2004 3rd Edition':
             case 'scorm20043rdedition':
                 return self::SCORM__2004_3__VERSION;
                 break;
