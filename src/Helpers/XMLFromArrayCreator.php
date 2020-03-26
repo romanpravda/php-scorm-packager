@@ -52,22 +52,20 @@ class XMLFromArrayCreator
         $elementName = $element['name'];
         $elementAttributes = $element['attributes'] ?? [];
         $elementChilds = $element['childs'] ?? [];
-        $elementValue = (string) ($element['value'] ?? '');
+        $elementValue = ((string) $element['value']) ?? null;
 
         xmlwriter_start_element($xmlwriter, $elementName);
 
         foreach ($elementAttributes as $elementAttributeName => $elementAttributeValue) {
-            xmlwriter_start_attribute($xmlwriter, $elementAttributeName);
-            xmlwriter_text($xmlwriter, (string) $elementAttributeValue);
-            xmlwriter_end_attribute($xmlwriter);
+            xmlwriter_write_attribute($xmlwriter, $elementAttributeName, (string) $elementAttributeValue);
         }
 
-        if (empty($elementChilds)) {
-            xmlwriter_text($xmlwriter, $elementValue);
-        } else {
+        if (!empty($elementChilds)) {
             foreach ($elementChilds as $elementChild) {
                 self::createElement($xmlwriter, $elementChild);
             }
+        } elseif (!is_null($elementValue)) {
+            xmlwriter_text($xmlwriter, $elementValue);
         }
 
         xmlwriter_end_element($xmlwriter);

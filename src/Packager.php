@@ -368,7 +368,7 @@ class Packager
             $scormVersionForSchema,
             $this->getMasteryScore(),
             $this->getStartingPage(),
-            $this->getDestination()
+            $this->getSource()
         );
     }
 

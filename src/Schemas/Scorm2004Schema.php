@@ -146,12 +146,7 @@ class Scorm2004Schema extends AbstractScormSchema
                                     "href" => $startingPage,
                                     "adlcp:scormType" => "sco",
                                 ],
-                                "childs" => [
-                                    [
-                                        "name" => "files",
-                                        "childs" => self::getFilesForSchema($pathToDirectory),
-                                    ],
-                                ],
+                                "childs" => self::getFilesForSchema($pathToDirectory),
                             ],
                         ],
                     ],
