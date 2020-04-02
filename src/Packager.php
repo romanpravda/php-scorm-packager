@@ -19,7 +19,6 @@ use Romanpravda\Scormpackager\Schemas\AbstractScormSchema;
 use Romanpravda\Scormpackager\Schemas\Scorm12Schema;
 use Romanpravda\Scormpackager\Schemas\Scorm2004Schema;
 use Throwable;
-use ZipArchive;
 
 class Packager
 {
@@ -292,7 +291,7 @@ class Packager
         $this->createManifestFile();
         $this->copyDefinitionFiles();
 
-        $pathToZipArchive = ZipArchiveHelper::createFromDirectory($this->getSource(), $this->getDestination(), str_replace("/", "_", $this->getIdentifier()));
+        $pathToZipArchive = ZipArchiveHelper::createFromDirectory($this->getSource(), $this->getDestination());
 
         $this->deleteManifestAndDefinitionFiles();
 

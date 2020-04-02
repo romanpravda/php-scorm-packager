@@ -15,13 +15,12 @@ class ZipArchiveHelper
      *
      * @param string $pathToDirectory
      * @param string $pathForZipArchive
-     * @param string $directoryName
      *
      * @return string
      *
      * @throws Throwable
      */
-    public static function createFromDirectory(string $pathToDirectory, string $pathForZipArchive, string $directoryName): string
+    public static function createFromDirectory(string $pathToDirectory, string $pathForZipArchive): string
     {
         ensure_directory($pathForZipArchive);
 
@@ -32,8 +31,7 @@ class ZipArchiveHelper
         
         throw_if($zip->open($pathToFile, ZipArchive::CREATE | ZipArchive::OVERWRITE) !== true, new Exception("Can not create zip-archive."));
 
-        $zip->addEmptyDir($directoryName);
-        self::addDirectoriesAndFilesToArchive($zip, $pathToDirectory, $directoryName);
+        self::addDirectoriesAndFilesToArchive($zip, $pathToDirectory);
 
         $zip->close();
 
@@ -45,9 +43,8 @@ class ZipArchiveHelper
      *
      * @param ZipArchive $zipArchive
      * @param string $pathToDirectory
-     * @param string $directoryName
      */
-    private static function addDirectoriesAndFilesToArchive(ZipArchive $zipArchive, string $pathToDirectory, string $directoryName)
+    private static function addDirectoriesAndFilesToArchive(ZipArchive $zipArchive, string $pathToDirectory)
     {
         $files = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($pathToDirectory, \RecursiveDirectoryIterator::SKIP_DOTS), \RecursiveIteratorIterator::LEAVES_ONLY);
 
@@ -56,7 +53,7 @@ class ZipArchiveHelper
                 $filePath = $file->getRealPath();
                 $relativePath = substr($filePath, strlen($pathToDirectory) + 1);
 
-                $zipArchive->addFile($filePath, $directoryName.DIRECTORY_SEPARATOR.$relativePath);
+                $zipArchive->addFile($filePath, $relativePath);
             }
         }
     }
