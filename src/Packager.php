@@ -82,6 +82,20 @@ class Packager
     private $destination;
 
     /**
+     * Package filename
+     *
+     * @var string
+     */
+    private $packageFilename;
+
+    /**
+     * Create zip archive after building package
+     *
+     * @var bool
+     */
+    private $createZipArchive;
+
+    /**
      * Packager constructor.
      *
      * @param array $config
@@ -116,6 +130,8 @@ class Packager
         $this->setMasteryScore($config['masteryScore'] ?? 80);
         $this->setStartingPage($config['startingPage'] ?? 'index.html');
         $this->setOrganization($config['organization'] ?? '');
+        $this->setPackageFilename($config['packageFilename'] ?? $config['identifier']);
+        $this->setCreateZipArchive($config['createZipArchive'] ?? true);
     }
 
     /**
@@ -279,6 +295,46 @@ class Packager
     }
 
     /**
+     * Get package filename
+     *
+     * @param string $packageFilename
+     */
+    public function setPackageFilename(string $packageFilename)
+    {
+        $this->packageFilename = $packageFilename;
+    }
+
+    /**
+     * Set package filename
+     *
+     * @return string
+     */
+    public function getPackageFilename(): string
+    {
+        return $this->packageFilename;
+    }
+
+    /**
+     * Set flag for create zip archive after building package
+     *
+     * @param bool $createZipArchive
+     */
+    public function setCreateZipArchive(bool $createZipArchive): void
+    {
+        $this->createZipArchive = $createZipArchive;
+    }
+
+    /**
+     * Get flag for create zip archive after building package
+     *
+     * @return bool
+     */
+    public function createZipArchive(): bool
+    {
+        return $this->createZipArchive;
+    }
+
+    /**
      * Build SCORM package
      *
      * @return string
@@ -291,11 +347,14 @@ class Packager
         $this->createManifestFile();
         $this->copyDefinitionFiles();
 
-        $pathToZipArchive = ZipArchiveHelper::createFromDirectory($this->getSource(), $this->getDestination());
+        if ($this->createZipArchive()) {
+            $destinationPath = ZipArchiveHelper::createFromDirectory($this->getSource(), $this->getDestination(), $this->getPackageFileName());
+            $this->deleteManifestAndDefinitionFiles();
+        } else {
+            $destinationPath = $this->getSource();
+        }
 
-        $this->deleteManifestAndDefinitionFiles();
-
-        return $pathToZipArchive;
+        return $destinationPath;
     }
 
     /**

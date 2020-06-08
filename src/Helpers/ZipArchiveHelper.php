@@ -15,17 +15,18 @@ class ZipArchiveHelper
      *
      * @param string $pathToDirectory
      * @param string $pathForZipArchive
+     * @param string|null $filename
      *
      * @return string
      *
      * @throws Throwable
      */
-    public static function createFromDirectory(string $pathToDirectory, string $pathForZipArchive): string
+    public static function createFromDirectory(string $pathToDirectory, string $pathForZipArchive, ?string $filename = null): string
     {
         ensure_directory($pathForZipArchive);
 
-        $filename = get_random_string().".zip";
-        $pathToFile = "{$pathForZipArchive}/{$filename}";
+        $filename = $filename ?? get_random_string();
+        $pathToFile = "{$pathForZipArchive}/{$filename}.zip";
 
         $zip = new ZipArchive();
         
