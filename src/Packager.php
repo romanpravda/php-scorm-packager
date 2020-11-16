@@ -16,14 +16,17 @@ use Romanpravda\Scormpackager\Helpers\ScormVersions;
 use Romanpravda\Scormpackager\Helpers\XMLFromArrayCreator;
 use Romanpravda\Scormpackager\Helpers\ZipArchiveHelper;
 use Romanpravda\Scormpackager\Schemas\AbstractScormSchema;
+use Romanpravda\Scormpackager\Schemas\MetadataSchema;
 use Romanpravda\Scormpackager\Schemas\Scorm12Schema;
-use Romanpravda\Scormpackager\Schemas\Scorm2004Schema;
+use Romanpravda\Scormpackager\Schemas\Scorm2004Edition3Schema;
+use Romanpravda\Scormpackager\Schemas\Scorm2004Edition4Schema;
 use Throwable;
 
 class Packager
 {
     const XML_MANIFEST_FILE_NAME = "imsmanifest.xml";
     const DIRECTORY_FOR_DEFINITION_FILES = "definitionFiles";
+    const XML_METADATA_FILE_NAME = "metadata.xml";
 
     /**
      * Version of SCORM package
@@ -346,6 +349,7 @@ class Packager
         $this->createDestinationDirectory();
         $this->createManifestFile();
         $this->copyDefinitionFiles();
+        $this->createMetadataFile();
 
         if ($this->createZipArchive()) {
             $destinationPath = ZipArchiveHelper::createFromDirectory($this->getSource(), $this->getDestination(), $this->getPackageFileName());
@@ -409,11 +413,11 @@ class Packager
                 break;
             case ScormVersions::SCORM__2004_3__VERSION:
                 $scormVersionForSchema = '2004 3rd Edition';
-                $scormSchemaClass = Scorm2004Schema::class;
+                $scormSchemaClass = Scorm2004Edition3Schema::class;
                 break;
             case ScormVersions::SCORM__2004_4__VERSION:
                 $scormVersionForSchema = '2004 4th Edition';
-                $scormSchemaClass = Scorm2004Schema::class;
+                $scormSchemaClass = Scorm2004Edition4Schema::class;
                 break;
             default:
                 throw new VersionIsNotSupportedException();
@@ -437,5 +441,36 @@ class Packager
     {
         unlink($this->getSource().DIRECTORY_SEPARATOR.self::XML_MANIFEST_FILE_NAME);
         delete_directory_if_exists($this->getSource().DIRECTORY_SEPARATOR.self::DIRECTORY_FOR_DEFINITION_FILES);
+    }
+
+    /**
+     * Returns Metadata schema.
+     *
+     * @return array
+     */
+    private function getMetadataSchema(): array
+    {
+        switch ($this->getVersion()) {
+            case ScormVersions::SCORM__2004_4__VERSION:
+                return MetadataSchema::getSchema();
+            default:
+                return [];
+        }
+    }
+
+    /**
+     * Create Metadata file in destination directory
+     *
+     * @throws Throwable
+     */
+    private function createMetadataFile()
+    {
+        $schema = $this->getMetadataSchema();
+
+        if (!empty($schema)) {
+            $xmlString = XMLFromArrayCreator::createManifestXMLFromSchema($schema);
+
+            file_put_contents($this->getSource() . DIRECTORY_SEPARATOR . Packager::XML_METADATA_FILE_NAME, $xmlString);
+        }
     }
 }

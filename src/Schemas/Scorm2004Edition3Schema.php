@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Romanpravda\Scormpackager\Schemas;
 
-class Scorm2004Schema extends AbstractScormSchema
+class Scorm2004Edition3Schema extends AbstractScormSchema
 {
     /**
      * Returns schema of SCORM manifest
