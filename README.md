@@ -12,6 +12,7 @@ $config = [
     "masteryScore" => "",
     "startingPage" => "",
     "organization" => "",
+    "metadataDescription" => "",
 ];
 
 $packager = new \Romanpravda\Scormpackager\Packager($config);
@@ -54,3 +55,45 @@ $packager->buildPackage();
 * organization
 
    Name of organization. Default - empty
+   
+* metadataDescription
+
+    Metadata description. Default - build date and technology
+    
+## If you need SCORM 2004 4th Edition
+
+#### You must pass the metadata config as the second parameter
+
+```php
+$config = [
+    ...
+];
+
+$metadataConfig = [
+    "entryIdentifier" => "",
+    "catalogValue" => "",
+    "lifeCycleVersion" => "",
+    "classification" => "",
+];
+
+$packager = new \Romanpravda\Scormpackager\Packager($config, $metadataConfig);
+$packager->buildPackage();
+```
+
+## Parameters in metadata config
+* entryIdentifier 
+
+   Metadata entry identifier. Default - "1"
+   
+* catalogValue
+
+   Metadata catalog value. Default - "Catalog"
+   
+* lifeCycleVersion
+
+   LifeCycle version of Metadata. Default - "1"
+   
+* classification
+
+   Metadata classification. Default - "educational objective"
+ 

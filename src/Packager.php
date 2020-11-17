@@ -15,15 +15,19 @@ use Romanpravda\Scormpackager\Exceptions\VersionNotSetException;
 use Romanpravda\Scormpackager\Helpers\ScormVersions;
 use Romanpravda\Scormpackager\Helpers\XMLFromArrayCreator;
 use Romanpravda\Scormpackager\Helpers\ZipArchiveHelper;
+use Romanpravda\Scormpackager\Schemas\AbstractMetadataSchema;
 use Romanpravda\Scormpackager\Schemas\AbstractScormSchema;
+use Romanpravda\Scormpackager\Schemas\Metadata2004Edition4Schema;
 use Romanpravda\Scormpackager\Schemas\Scorm12Schema;
-use Romanpravda\Scormpackager\Schemas\Scorm2004Schema;
+use Romanpravda\Scormpackager\Schemas\Scorm2004Edition3Schema;
+use Romanpravda\Scormpackager\Schemas\Scorm2004Edition4Schema;
 use Throwable;
 
 class Packager
 {
     const XML_MANIFEST_FILE_NAME = "imsmanifest.xml";
     const DIRECTORY_FOR_DEFINITION_FILES = "definitionFiles";
+    const XML_METADATA_FILE_NAME = "metadata.xml";
 
     /**
      * Version of SCORM package
@@ -96,15 +100,52 @@ class Packager
     private $createZipArchive;
 
     /**
+     * Metadata description
+     *
+     * @var string
+     */
+    private $metadataDescription;
+
+    /**
+     * Metadata entry identifier
+     *
+     * @var string
+     */
+    private $entryIdentifier;
+
+    /**
+     * Metadata catalog value
+     *
+     * @var string
+     */
+    private $catalogValue;
+
+    /**
+     * Metadata lifeCycle version
+     *
+     * @var string
+     */
+    private $lifeCycleVersion;
+
+    /**
+     * Metadata classification
+     *
+     * @var string
+     */
+    private $classification;
+
+    /**
      * Packager constructor.
      *
      * @param array $config
+     * @param array|null $metadataConfig
      *
      * @throws Throwable
      */
-    public function __construct(array $config)
+    public function __construct(array $config, array $metadataConfig = [])
     {
         $this->setConfig($config);
+        $this->setMetadataConfig($metadataConfig);
     }
 
     /**
@@ -132,6 +173,20 @@ class Packager
         $this->setOrganization($config['organization'] ?? '');
         $this->setPackageFilename($config['packageFilename'] ?? $config['identifier']);
         $this->setCreateZipArchive($config['createZipArchive'] ?? true);
+        $this->setMetadataDescription($config['metadataDescription'] ?? null);
+    }
+
+    /**
+     * Applying metadataConfig
+     *
+     * @param array $metadataConfig
+     */
+    private function setMetadataConfig(array $metadataConfig)
+    {
+        $this->setEntryIdentifier($metadataConfig['entryIdentifier'] ?? '1');
+        $this->setCatalogValue($metadataConfig['catalogValue'] ?? 'Catalog');
+        $this->setLifeCycleVersion($metadataConfig['lifeCycleVersion'] ?? '1');
+        $this->setClassification($metadataConfig['classification'] ?? 'educational objective');
     }
 
     /**
@@ -335,6 +390,110 @@ class Packager
     }
 
     /**
+     * Set meta description for SCORM package
+     *
+     * @param string|null $metadataDescription
+     */
+    public function setMetadataDescription(?string $metadataDescription): void
+    {
+        if (is_null($metadataDescription)) {
+            $this->metadataDescription = "Build Date: " . date("m.d.Y") . "; Technology: html;";
+        } else {
+            $this->metadataDescription = $metadataDescription;
+        }
+    }
+
+    /**
+     * Get meta description for SCORM package
+     *
+     * @return string
+     */
+    public function getMetadataDescription(): string
+    {
+        return $this->metadataDescription;
+    }
+
+    /**
+     * Set metadata EntryIdentifier
+     *
+     * @param string $entryIdentifier
+     */
+    public function setEntryIdentifier(string $entryIdentifier)
+    {
+        $this->entryIdentifier = $entryIdentifier;
+    }
+
+    /**
+     * Get metadata EntryIdentifier
+     *
+     * @return string
+     */
+    public function getEntryIdentifier(): string
+    {
+        return $this->entryIdentifier;
+    }
+
+    /**
+     * Set metadata catalog value
+     *
+     * @param string $catalogValue
+     */
+    public function setCatalogValue(string $catalogValue)
+    {
+        $this->catalogValue = $catalogValue;
+    }
+
+    /**
+     * Get metadata catalog value
+     *
+     * @return string
+     */
+    public function getCatalogValue(): string
+    {
+        return $this->catalogValue;
+    }
+
+    /**
+     * Set metadata lifeCycle version
+     *
+     * @param string $lifeCycleVersion
+     */
+    public function setLifeCycleVersion(string $lifeCycleVersion)
+    {
+        $this->lifeCycleVersion = $lifeCycleVersion;
+    }
+
+    /**
+     * Get metadata lifeCycle version
+     *
+     * @return string
+     */
+    public function getLifeCycleVersion(): string
+    {
+        return $this->lifeCycleVersion;
+    }
+
+    /**
+     * Set metadata classification
+     *
+     * @param string $classification
+     */
+    public function setClassification(string $classification)
+    {
+        $this->classification = $classification;
+    }
+
+    /**
+     * Get metadata classification
+     *
+     * @return string
+     */
+    public function getClassification(): string
+    {
+        return $this->classification;
+    }
+
+    /**
      * Build SCORM package
      *
      * @return string
@@ -346,6 +505,7 @@ class Packager
         $this->createDestinationDirectory();
         $this->createManifestFile();
         $this->copyDefinitionFiles();
+        $this->createMetadataFile();
 
         if ($this->createZipArchive()) {
             $destinationPath = ZipArchiveHelper::createFromDirectory($this->getSource(), $this->getDestination(), $this->getPackageFileName());
@@ -370,10 +530,10 @@ class Packager
      */
     private function copyDefinitionFiles()
     {
-        $pathToDefinitionFiles = realpath(__DIR__.DIRECTORY_SEPARATOR."..".DIRECTORY_SEPARATOR."dist".DIRECTORY_SEPARATOR."definitionFiles".DIRECTORY_SEPARATOR.$this->getVersion());
+        $pathToDefinitionFiles = realpath(__DIR__ . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . "dist" . DIRECTORY_SEPARATOR . "definitionFiles" . DIRECTORY_SEPARATOR . $this->getVersion());
         $definitionFiles = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($pathToDefinitionFiles, RecursiveDirectoryIterator::SKIP_DOTS), RecursiveIteratorIterator::CHILD_FIRST);
 
-        copy_files($definitionFiles, $pathToDefinitionFiles, $this->getSource().DIRECTORY_SEPARATOR.self::DIRECTORY_FOR_DEFINITION_FILES);
+        copy_files($definitionFiles, $pathToDefinitionFiles, $this->getSource() . DIRECTORY_SEPARATOR . self::DIRECTORY_FOR_DEFINITION_FILES);
     }
 
     /**
@@ -389,7 +549,7 @@ class Packager
 
         $xmlString = XMLFromArrayCreator::createManifestXMLFromSchema($schema);
 
-        file_put_contents($this->getSource().DIRECTORY_SEPARATOR.self::XML_MANIFEST_FILE_NAME, $xmlString);
+        file_put_contents($this->getSource() . DIRECTORY_SEPARATOR . self::XML_MANIFEST_FILE_NAME, $xmlString);
     }
 
     /**
@@ -409,11 +569,11 @@ class Packager
                 break;
             case ScormVersions::SCORM__2004_3__VERSION:
                 $scormVersionForSchema = '2004 3rd Edition';
-                $scormSchemaClass = Scorm2004Schema::class;
+                $scormSchemaClass = Scorm2004Edition3Schema::class;
                 break;
             case ScormVersions::SCORM__2004_4__VERSION:
                 $scormVersionForSchema = '2004 4th Edition';
-                $scormSchemaClass = Scorm2004Schema::class;
+                $scormSchemaClass = Scorm2004Edition4Schema::class;
                 break;
             default:
                 throw new VersionIsNotSupportedException();
@@ -426,7 +586,8 @@ class Packager
             $scormVersionForSchema,
             $this->getMasteryScore(),
             $this->getStartingPage(),
-            $this->getSource()
+            $this->getSource(),
+            $this->getMetadataDescription()
         );
     }
 
@@ -435,7 +596,53 @@ class Packager
      */
     private function deleteManifestAndDefinitionFiles()
     {
-        unlink($this->getSource().DIRECTORY_SEPARATOR.self::XML_MANIFEST_FILE_NAME);
-        delete_directory_if_exists($this->getSource().DIRECTORY_SEPARATOR.self::DIRECTORY_FOR_DEFINITION_FILES);
+        unlink($this->getSource() . DIRECTORY_SEPARATOR . self::XML_MANIFEST_FILE_NAME);
+        delete_directory_if_exists($this->getSource() . DIRECTORY_SEPARATOR . self::DIRECTORY_FOR_DEFINITION_FILES);
+    }
+
+    /**
+     * Returns Metadata schema.
+     *
+     * @return array
+     *
+     * @throws VersionIsNotSupportedException
+     */
+    private function getMetadataSchema(): array
+    {
+        /** @var AbstractMetadataSchema $metadataSchemaClass */
+        switch ($this->getVersion()) {
+            case ScormVersions::SCORM__1_2__VERSION:
+            case ScormVersions::SCORM__2004_3__VERSION:
+                return [];
+            case ScormVersions::SCORM__2004_4__VERSION:
+                $metadataSchemaClass = Metadata2004Edition4Schema::class;
+                break;
+            default:
+                throw new VersionIsNotSupportedException();
+        }
+
+        return $metadataSchemaClass::getSchema(
+            $this->getTitle(),
+            $this->getEntryIdentifier(),
+            $this->getCatalogValue(),
+            $this->getLifeCycleVersion(),
+            $this->getClassification()
+        );
+    }
+
+    /**
+     * Create Metadata file in destination directory
+     *
+     * @throws Throwable
+     */
+    private function createMetadataFile()
+    {
+        $schema = $this->getMetadataSchema();
+
+        if (!empty($schema)) {
+            $xmlString = XMLFromArrayCreator::createManifestXMLFromSchema($schema);
+
+            file_put_contents($this->getSource() . DIRECTORY_SEPARATOR . Packager::XML_METADATA_FILE_NAME, $xmlString);
+        }
     }
 }

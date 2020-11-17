@@ -98,8 +98,9 @@ abstract class AbstractScormSchema
      * @param int $masteryScore
      * @param string $startingPage
      * @param string $pathToDirectory
+     * @param string $metadataDescription
      *
      * @return array
      */
-    abstract public static function getSchema(string $title, string $identifier, string $organization, string $version, int $masteryScore, string $startingPage, string $pathToDirectory): array;
+    abstract public static function getSchema(string $title, string $identifier, string $organization, string $version, int $masteryScore, string $startingPage, string $pathToDirectory, string $metadataDescription): array;
 }

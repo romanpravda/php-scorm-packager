@@ -16,10 +16,11 @@ class Scorm12Schema extends AbstractScormSchema
      * @param int $masteryScore
      * @param string $startingPage
      * @param string $pathToDirectory
+     * @param string $metadataDescription
      *
      * @return array
      */
-    public static function getSchema(string $title, string $identifier, string $organization, string $version, int $masteryScore, string $startingPage, string $pathToDirectory): array
+    public static function getSchema(string $title, string $identifier, string $organization, string $version, int $masteryScore, string $startingPage, string $pathToDirectory, string $metadataDescription): array
     {
         $schemaIdentifier = self::getSchemaIdentifier($identifier);
         $itemIdentifier = self::getItemIdentifier($identifier);
