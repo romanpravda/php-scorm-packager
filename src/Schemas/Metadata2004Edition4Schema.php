@@ -4,14 +4,19 @@ declare(strict_types=1);
 
 namespace Romanpravda\Scormpackager\Schemas;
 
-class MetadataSchema
+class Metadata2004Edition4Schema extends AbstractMetadataSchema
 {
     /**
      * Returns schema of metadata file
      *
+     * @param string $title
+     * @param string $entryIdentifier
+     * @param string $catalogValue
+     * @param string $lifeCycleVersion
+     * @param string $classification
      * @return array[]
      */
-    public static function getSchema(): array
+    public static function getSchema(string $title, string $entryIdentifier, string $catalogValue, string $lifeCycleVersion, string $classification): array
     {
         return [
             [
@@ -30,10 +35,11 @@ class MetadataSchema
                                 "childs" => [
                                     [
                                         "name" => "catalog",
+                                        "value" => $catalogValue
                                     ],
                                     [
                                         "name" => "entry",
-                                        "value" => "1"
+                                        "value" => $entryIdentifier
                                     ],
                                 ],
                             ],
@@ -45,7 +51,7 @@ class MetadataSchema
                                         "attributes" => [
                                             "language" => "en-US"
                                         ],
-                                        "value" => "Title"
+                                        "value" => $title
                                     ],
                                 ],
                             ],
@@ -88,7 +94,7 @@ class MetadataSchema
                                         "attributes" => [
                                             "language" => "en-US"
                                         ],
-                                        "value" => "1"
+                                        "value" => $lifeCycleVersion
                                     ],
                                 ],
                             ],
@@ -172,7 +178,7 @@ class MetadataSchema
                                     ],
                                     [
                                         "name" => "value",
-                                        "value" => "educational objective"
+                                        "value" => $classification
                                     ],
                                 ],
                             ],

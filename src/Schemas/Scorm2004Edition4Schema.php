@@ -16,10 +16,11 @@ class Scorm2004Edition4Schema extends AbstractScormSchema
      * @param int $masteryScore
      * @param string $startingPage
      * @param string $pathToDirectory
+     * @param string $metadataDescription
      *
      * @return array
      */
-    public static function getSchema(string $title, string $identifier, string $organization, string $version, int $masteryScore, string $startingPage, string $pathToDirectory): array
+    public static function getSchema(string $title, string $identifier, string $organization, string $version, int $masteryScore, string $startingPage, string $pathToDirectory, string $metadataDescription): array
     {
         $schemaIdentifier = self::getSchemaIdentifier($identifier);
         $itemIdentifier = self::getItemIdentifier($identifier);
@@ -170,7 +171,7 @@ class Scorm2004Edition4Schema extends AbstractScormSchema
                                                                         "attributes" => [
                                                                             "language" => "en"
                                                                         ],
-                                                                        "value" => "Провайдер: Synergy Technology; Дата сборки: 19.10.2020; Технология: html; Среда разработки: Course Editor;"
+                                                                        "value" => $metadataDescription
                                                                     ],
                                                                 ],
                                                             ],
@@ -224,7 +225,7 @@ class Scorm2004Edition4Schema extends AbstractScormSchema
                                                                 "attributes" => [
                                                                     "language" => "en"
                                                                 ],
-                                                                "value" => "Пользователи хотят иметь возможность менять размер ролика, теста и заголовка лонгрида(b_191020)"
+                                                                "value" => $title
                                                             ],
                                                         ],
                                                     ],
@@ -236,7 +237,7 @@ class Scorm2004Edition4Schema extends AbstractScormSchema
                                                                 "attributes" => [
                                                                     "language" => "en"
                                                                 ],
-                                                                "value" => "Провайдер: Synergy Technology; Дата сборки: 19.10.2020; Технология: html; Среда разработки: Course Editor;"
+                                                                "value" => $metadataDescription
                                                             ],
                                                         ],
                                                     ],
