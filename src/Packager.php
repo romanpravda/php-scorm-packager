@@ -145,10 +145,7 @@ class Packager
     public function __construct(array $config, array $metadataConfig = null)
     {
         $this->setConfig($config);
-
-        if (!is_null($metadataConfig)) {
-            $this->setMetadataConfig($metadataConfig);
-        }
+        $this->setMetadataConfig($metadataConfig);
     }
 
     /**
@@ -399,7 +396,7 @@ class Packager
      */
     public function setMetadataDescription(?string $metadataDescription): void
     {
-        if (!$metadataDescription) {
+        if (is_null($metadataDescription)) {
             $this->metadataDescription = "Build Date: " . date("m.d.Y") . "; Technology: html;";
         } else {
             $this->metadataDescription = $metadataDescription;
@@ -615,7 +612,6 @@ class Packager
         /** @var AbstractMetadataSchema $metadataSchemaClass */
         switch ($this->getVersion()) {
             case ScormVersions::SCORM__1_2__VERSION:
-                return [];
             case ScormVersions::SCORM__2004_3__VERSION:
                 return [];
             case ScormVersions::SCORM__2004_4__VERSION:
