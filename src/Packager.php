@@ -142,7 +142,7 @@ class Packager
      *
      * @throws Throwable
      */
-    public function __construct(array $config, ?array $metadataConfig = [])
+    public function __construct(array $config, array $metadataConfig = [])
     {
         $this->setConfig($config);
         $this->setMetadataConfig($metadataConfig);
