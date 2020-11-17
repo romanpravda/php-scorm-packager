@@ -138,7 +138,7 @@ class Packager
      * Packager constructor.
      *
      * @param array $config
-     * @param array|null $metadataConfig
+     * @param array $metadataConfig
      *
      * @throws Throwable
      */
