@@ -98,44 +98,6 @@ class Scorm2004Edition4Schema extends AbstractScormSchema
                                                 "value" => $title,
                                             ],
                                             [
-                                                "name" => "adlnav:presentation",
-                                                "childs" => [
-                                                    [
-                                                        "name" => "adlnav:navigationInterface",
-                                                        "childs" => [
-                                                            [
-                                                                "name" => "adlnav:hideLMSUI",
-                                                                "value" => "continue",
-                                                            ],
-                                                            [
-                                                                "name" => "adlnav:hideLMSUI",
-                                                                "value" => "previous",
-                                                            ],
-                                                            [
-                                                                "name" => "adlnav:hideLMSUI",
-                                                                "value" => "exit",
-                                                            ],
-                                                            [
-                                                                "name" => "adlnav:hideLMSUI",
-                                                                "value" => "exitAll",
-                                                            ],
-                                                            [
-                                                                "name" => "adlnav:hideLMSUI",
-                                                                "value" => "abandon",
-                                                            ],
-                                                            [
-                                                                "name" => "adlnav:hideLMSUI",
-                                                                "value" => "abandonAll",
-                                                            ],
-                                                            [
-                                                                "name" => "adlnav:hideLMSUI",
-                                                                "value" => "suspendAll",
-                                                            ],
-                                                        ],
-                                                    ],
-                                                ],
-                                            ],
-                                            [
                                                 "name" => "imsss:sequencing",
                                                 "childs" => [
                                                     [
@@ -158,25 +120,6 @@ class Scorm2004Edition4Schema extends AbstractScormSchema
                                                     "xmlns" => "http://ltsc.ieee.org/xsd/LOM",
                                                     "xmlns:xsi" => "http://www.w3.org/2001/XMLSchema-instance",
                                                     "xsi:schemaLocation" => "http://ltsc.ieee.org/xsd/LOM lom.xsd",
-                                                ],
-                                                "childs" => [
-                                                    [
-                                                        "name" => "general",
-                                                        "childs" => [
-                                                            [
-                                                                "name" => "description",
-                                                                "childs" => [
-                                                                    [
-                                                                        "name" => "string",
-                                                                        "attributes" => [
-                                                                            "language" => "en"
-                                                                        ],
-                                                                        "value" => $metadataDescription
-                                                                    ],
-                                                                ],
-                                                            ],
-                                                        ],
-                                                    ],
                                                 ],
                                             ],
                                             [
@@ -203,50 +146,6 @@ class Scorm2004Edition4Schema extends AbstractScormSchema
                     [
                         "name" => "resources",
                         "childs" => [
-                            [
-                                "name" => "metadata",
-                                "childs" => [
-                                    [
-                                        "name" => "lom",
-                                        "attributes" => [
-                                            "xmlns" => "http://ltsc.ieee.org/xsd/LOM",
-                                            "xmlns:xsi" => "http://www.w3.org/2001/XMLSchema-instance",
-                                            "xsi:schemaLocation" => "http://ltsc.ieee.org/xsd/LOM lom.xsd",
-                                        ],
-                                        "childs" => [
-                                            [
-                                                "name" => "general",
-                                                "childs" => [
-                                                    [
-                                                        "name" => "title",
-                                                        "childs" => [
-                                                            [
-                                                                "name" => "string",
-                                                                "attributes" => [
-                                                                    "language" => "en"
-                                                                ],
-                                                                "value" => $title
-                                                            ],
-                                                        ],
-                                                    ],
-                                                    [
-                                                        "name" => "description",
-                                                        "childs" => [
-                                                            [
-                                                                "name" => "string",
-                                                                "attributes" => [
-                                                                    "language" => "en"
-                                                                ],
-                                                                "value" => $metadataDescription
-                                                            ],
-                                                        ],
-                                                    ],
-                                                ],
-                                            ],
-                                        ],
-                                    ],
-                                ],
-                            ],
                             [
                                 "name" => "resource",
                                 "attributes" => [
