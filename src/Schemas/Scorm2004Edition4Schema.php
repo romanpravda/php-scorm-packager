@@ -97,18 +97,6 @@ class Scorm2004Edition4Schema extends AbstractScormSchema
                                                 "name" => "title",
                                                 "value" => $title,
                                             ],
-                                            [
-                                                "name" => "imsss:sequencing",
-                                                "childs" => [
-                                                    [
-                                                        "name" => "imsss:deliveryControls",
-                                                        "attributes" => [
-                                                            "completionSetByContent" => "true",
-                                                            "objectiveSetByContent" => "true",
-                                                        ],
-                                                    ],
-                                                ],
-                                            ],
                                         ],
                                     ],
                                     [
